@@ -1,4 +1,4 @@
-from flask_wtf import Form
+from flask.ext.wtf import Form
 from wtforms import StringField, PasswordField, BooleanField, SubmitField
 from wtforms.validators import Required, Length, Email, Regexp, EqualTo
 from wtforms import ValidationError
@@ -59,3 +59,14 @@ class PasswordResetForm(Form):
     def validate_email(self, field):
         if User.query.filter_by(email=field.data).first() is None:
             raise ValidationError('Unknown email address.')
+
+
+class ChangeEmailForm(Form):
+    email = StringField('New Email', validators=[Required(), Length(1, 64),
+                                                 Email()])
+    password = PasswordField('Password', validators=[Required()])
+    submit = SubmitField('Update Email Address')
+
+    def validate_email(self, field):
+        if User.query.filter_by(email=field.data).first():
+            raise ValidationError('Email already registered.')
